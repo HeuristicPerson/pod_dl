@@ -1,0 +1,6 @@
+container_build.sh
+container_save.sh
+.git
+.idea
+pod_dl/test*
+*/__pycache__/*
