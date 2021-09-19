@@ -6,7 +6,7 @@ import os
 # Program constants that users shouldn't modify Constants
 #=======================================================================================================================
 # Program name and version
-u_PRG = 'Pod Downloader - v1.0.2021-09-15'
+u_PRG = 'Pod Downloader - v1.0.2021-09-19'
 
 # Main configuration file
 _u_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
