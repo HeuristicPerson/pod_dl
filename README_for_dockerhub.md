@@ -3,12 +3,8 @@
 ## Introduction ##
 
 "Pod DL" (Podcast Downloader) is a docker image containing "Pod DL" script to automatically download the latest episodes
-of your podcast subscriptions.
-
-To get the already built docker image, please go to
-[hub.docker.com/r/zipzop/pod_dl](https://hub.docker.com/r/zipzop/pod_dl) or, if you just want to get the downloader
-script, please download folder [pod_dl](https://github.com/HeuristicPerson/pod_dl/tree/v1.0/pod_dl) and checkout
-[README.md](https://github.com/HeuristicPerson/pod_dl/blob/v1.0/pod_dl/README.md) in it.
+of your podcast subscriptions. To follow the development of the container, notify bugs, and make improvement suggestions
+please go to [github](https://github.com/HeuristicPerson/pod_dl/).
 
 
 ## Configuration options ## 

@@ -5,21 +5,12 @@
 "Pod DL" (Podcast Downloader) is a Python 3 script to automatically download the latest episodes of a list of podcast
 feeds (your subscriptions) included in a `subs.txt` file.
 
+## Configuration using `pod_dl.ini` ##
 
-## Usage: Non "dockerized" version ##
-
-Non-dockerized version of the downloader can be found in directory `pod_dl`. Download a copy of the directory and place
-it wherever you want in your computer. There are two different ways to configure the program, by editing the file called
-`pod_dl.ini`, and by setting environment variables. The latter has higher priority which means any option defined in the
-`pod_dl.ini` can be overridden by also setting it as an environment variable.
+You can configure "Pod DL" to suit your needs by editing the file `pod_dl.ini`. Available options and their meaning are:
 
 
-### Configuration using `pod_dl.ini` ###
-
-Available options and their meaning are:
-
-
-#### Section `[main]` ####
+### Section `[main]` ###
     
   * `debug` yes/no. In debug mode, the program will be more verbose. It's recommended to create and test your
                configuration with debug mode activated; once you're sure everything works fine, deactivate debug mode. 
@@ -36,7 +27,7 @@ Available options and their meaning are:
                 happen everytime you run the downloader. By setting it to 0, you can keep all the episodes you download.
 
 
-#### Section `[transcode]` ####
+### Section `[transcode]` ###
 
   * `active` yes/no. When active, downloaded episodes will be converted to `.ogg` format.
   * `force` yes/no. When active, `.mp3` episodes will be discarded and the transcoded `.ogg` will be kept. When set
@@ -49,7 +40,7 @@ Available options and their meaning are:
                podcasts.
 
 
-#### Section `[post_script]` ####
+### Section `[post_script]` ###
 
 This section will define a script that will be executed after the downloading (and transcoding) of each episode. You can
 send information of the current episode to your script by using the following tags:
@@ -72,7 +63,7 @@ The two available options in `[post_script]` section are:
               string create your string. e.g. `"This will appear in the program output"`
 
 
-### Configuration using environment variables ###
+## Configuration using environment variables ##
 
 All configuration options available in `pod_dl.ini` are also available as environment variables but under a different
 name. Below you can see the correspondence between them. We won't explain again their meaning so please read the section
@@ -97,4 +88,3 @@ about `pod_dl.ini` to know more about them.
   * [ ] Retry episode downloads if anything fails
   * [ ] Check transcoding errors with ffmpeg. Why do they happen? any way of preventing them?
   * [ ] Launch two different scripts depending on whether an episode downloaded correctly or not
-
