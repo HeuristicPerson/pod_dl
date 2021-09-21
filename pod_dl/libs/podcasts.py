@@ -1,7 +1,9 @@
 import datetime
 import io
 import logging
+import time
 
+import urllib.error
 from urllib.request import urlopen
 import urllib.request as request
 import xml.etree.ElementTree as ElTree
@@ -46,13 +48,20 @@ class Podcast(object):
         return u_out
 
     def read_feed(self):
-        o_file = urlopen(self.u_feed)
-        tree = ElTree.parse(o_file)
-        x_root = tree.getroot()
+        for i_try in range(constants.i_DL_RETRIES):
+            try:
+                o_file = urlopen(self.u_feed)
+                tree = ElTree.parse(o_file)
+                x_root = tree.getroot()
 
-        for o_elem in x_root.findall('channel/item'):
-            o_episode = Episode(po_xml=o_elem)
-            self.lo_eps.append(o_episode)
+                for o_elem in x_root.findall('channel/item'):
+                    o_episode = Episode(po_xml=o_elem)
+                    self.lo_eps.append(o_episode)
+
+                break
+
+            except urllib.error.URLError:
+                time.sleep(constants.i_DL_RETRY_DELAY)
 
     def dl_episodes(self):
         """

@@ -6,7 +6,11 @@ import os
 # Program constants that users shouldn't modify Constants
 #=======================================================================================================================
 # Program name and version
-u_PRG = 'Pod Downloader - v1.0.2021-09-19'
+u_PRG = 'Pod Downloader - v1.0.2021-09-21'
+
+# Number of retries and delay between them for downloads
+i_DL_RETRIES = 5
+i_DL_RETRY_DELAY = 10
 
 # Main configuration file
 _u_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))

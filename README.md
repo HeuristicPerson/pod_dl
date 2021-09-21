@@ -6,6 +6,9 @@
 of your podcast subscriptions. If you are not interested in the docker image but just in the downloading script, please
 download the folder `pod_dl` and read the `README.md` file inside it.
 
+To get the docker image already built and ready to be deployed, go to
+[hub.docker.com/repository/docker/zipzop/pod_dl](https://hub.docker.com/repository/docker/zipzop/pod_dl)
+
 ## Configuration options ## 
 
 ### Environment variables ###
@@ -66,25 +69,24 @@ in the docker image.
 
     version: "2.1"
     services:
-    pod_dl:
-      image: pod_dl:20210915
-      container_name: pod_dl_production
-      network_mode: bridge
-      environment:
-        - UID=1000
-        - GID=1000
-        - CRON_HOURS=2
-        - POD_DL_DEBUG=no
-        - POD_DL_MAX_SYNC=5
-        - POD_DL_MAX_ARCH=10
-        - POD_DL_TRANSC_SERV=yes
-        - POD_DL_TRANSC_FORC=no
-        - POD_DL_TRANSC_FREQ=22050
-        - POD_DL_TRANSC_BITR=96
-        - POD_DL_SCR_CMD=('curl', '-d', 'from=pod_dl&level=info&msg=Downloaded %pod_name% > %ep_title%', '-X', 'POST', 'http://mother.lan/log')
-        - POD_DL_SCR_MSG=Log sent to MU/TH/UR 6000
-        - TZ=Europe/Madrid
-      volumes:
-        - /docker_data/pod_dl/my_podcasts:/podcasts
-      restart: "unless-stopped"
-
+      pod_dl:
+        image: pod_dl:20210915
+        container_name: pod_dl_production
+        network_mode: bridge
+        environment:
+          - UID=1000
+          - GID=1000
+          - CRON_HOURS=2
+          - POD_DL_DEBUG=no
+          - POD_DL_MAX_SYNC=5
+          - POD_DL_MAX_ARCH=10
+          - POD_DL_TRANSC_SERV=yes
+          - POD_DL_TRANSC_FORC=no
+          - POD_DL_TRANSC_FREQ=22050
+          - POD_DL_TRANSC_BITR=96
+          - POD_DL_SCR_CMD=('curl', '-d', 'from=pod_dl&level=info&msg=Downloaded %pod_name% > %ep_title%', '-X', 'POST', 'http://mother.lan/log')
+          - POD_DL_SCR_MSG=Log sent to MU/TH/UR 6000
+          - TZ=Europe/Madrid
+        volumes:
+          - /docker_data/pod_dl/my_podcasts:/podcasts
+        restart: "unless-stopped"

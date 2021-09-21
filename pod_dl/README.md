@@ -91,9 +91,6 @@ about `pod_dl.ini` to know more about them.
   * `POD_DL_SCR_MSG` → `message`
 
 
-# TODO: How to create an automatic action in github to build and publish the docker image
-https://medium.com/platformer-blog/lets-publish-a-docker-image-to-docker-hub-using-a-github-action-f0b17e5cceb3
-
 ## TODO ##
 
   * [ ] Make sure downloader continues working fine if an episode download is interrupted
