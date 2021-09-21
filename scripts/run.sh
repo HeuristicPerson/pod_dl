@@ -9,7 +9,7 @@ echo "#               /____/_| .__/____/\___/| .__/                #"
 echo "#                      |_|             |_|                   #"
 echo '##############################################################'
 echo ""
-echo "Starting zipzop/pod_dl:20210915"
+echo "Starting zipzop/pod_dl:v1.0 (2021-09-21)"
 echo "=============================================================="
 
 # Copying of the sample subscriptions file in case there is no one in the
