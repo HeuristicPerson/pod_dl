@@ -383,6 +383,9 @@ class Episode(object):
         # sorting
         o_audiofile.tag.track_num = (None, None)
 
+        # ...and a bit less common, but some podcasts add disc number.
+        o_audiofile.tag.disc_num = (None, None)
+
         # TODO: Use proper album artist = podcast title. By now I leave the tag empty
         # Again... lack of consistency on album artist and jellyfin sorting episodes in a weird order so I decided to
         # replace album artist tag with the podcast name.
