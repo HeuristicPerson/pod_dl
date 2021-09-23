@@ -10,9 +10,9 @@ echo "#                      |_|             |_|                   #"
 echo '##############################################################'
 echo ""
 
-TAG=$(python -c "import importlib.util; module = importlib.util.spec_from_file_location('constants', '/app/pod_dl/libs'); print i_DL_RETRIES")
+VER=$(python -c "import sys;sys.path.append('/app/pod_dl/');import libs.constants as constants;print(constants.u_VER)")
 
-echo "Starting zipzop/pod_dl:v1.0.dev 2021-09-21 $TAG"
+echo "Starting zipzop/pod_dl:$VER"
 echo "=============================================================="
 
 # Copying of the sample subscriptions file in case there is no one in the
