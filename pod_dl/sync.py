@@ -20,7 +20,8 @@ u_TEST_FEED = 'https://www.spreaker.com/show/1432098/episodes/feed'
 #=======================================================================================================================
 if __name__ == '__main__':
     if constants.b_DEBUG:
-        print('%s\n%s' % (constants.u_PRG, '=' * len(constants.u_PRG)))
+        u_prog_and_ver = '%s - %s' % (constants.u_PRG, constants.u_VER)
+        print('%s\n%s' % (u_prog_and_ver, '=' * len(constants.u_PRG)))
         constants.print_constants()
 
     lo_subs = subs.read_subs(constants.u_SUBS)
