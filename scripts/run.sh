@@ -9,7 +9,10 @@ echo "#               /____/_| .__/____/\___/| .__/                #"
 echo "#                      |_|             |_|                   #"
 echo '##############################################################'
 echo ""
-echo "Starting zipzop/pod_dl:v1.0.dev (2021-09-21)"
+
+TAG=$(python -c "import importlib.util; module = importlib.util.spec_from_file_location('constants', '/app/pod_dl/libs'); print i_DL_RETRIES")
+
+echo "Starting zipzop/pod_dl:v1.0.dev 2021-09-21 $TAG"
 echo "=============================================================="
 
 # Copying of the sample subscriptions file in case there is no one in the
