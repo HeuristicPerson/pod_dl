@@ -6,7 +6,7 @@ import os
 # Program constants that users shouldn't modify Constants
 #=======================================================================================================================
 # Program name and version
-u_PRG = 'Pod Downloader - v1.0.2021-09-21'
+u_PRG = 'Pod Downloader - v1.0.dev 2021-09-21'
 
 # Number of retries and delay between them for downloads
 i_DL_RETRIES = 5
