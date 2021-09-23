@@ -2,9 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ v1.0 ]
+    branches: [ v1.x.dev ]
   pull_request:
-    branches: [ v1.0 ]
+    branches: [ v1.x.dev ]
 
 jobs:
 
@@ -22,7 +22,7 @@ jobs:
           docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
 
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag ${{secrets.DOCKER_USER}}/pod_dl:v1.0
+        run: docker build . --file Dockerfile --tag ${{secrets.DOCKER_USER}}/pod_dl:v1.x.dev
 
       - name: Docker Push
-        run: docker push ${{secrets.DOCKER_USER}}/pod_dl:v1.0
+        run: docker push ${{secrets.DOCKER_USER}}/pod_dl:v1.x.dev
