@@ -31,7 +31,15 @@ please go to [github](https://github.com/HeuristicPerson/pod_dl/).
     small file size.
   * `POD_DL_SCR_CMD` Script to be executed after the download and transcoding of each episode. The script must be typed
     as a list of single-quoted "words", separated by commas and enclosed by parenthesis. Some tags with information
-    about the downloaded episodes are available. Read [pod_dl documentation](pod_dl/README.md) to know more.
+    about the downloaded episodes are available:
+     
+    * `%pod_name%` The name of the podcast
+    * `%ep_title%` The title of the episode
+    * `%ep_hsize%` The human size of the episode (e.g. "48 MiB")
+    * `%ep_isize%` The size of the episode in bytes
+    * `%ep_durat%` The duration of the episode in HH:MM:SS format (NOT VALID BY NOW, IT WILL ALWAYS BE 00:00:00
+    * `%ep_path%` The full path of the archived episode (e.g. "/home/john/my_pods/episode.ogg")
+
   * `POD_DL_SCR_MSG` Message to be printed in the logs when the script is executed. Read
     [pod_dl documentation](pod_dl/README.md) to know more.
   * `TZ` Timezone of your location so files and logs will have the right time.
