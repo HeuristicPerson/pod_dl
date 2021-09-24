@@ -9,7 +9,10 @@ echo "#               /____/_| .__/____/\___/| .__/                #"
 echo "#                      |_|             |_|                   #"
 echo '##############################################################'
 echo ""
-echo "Starting zipzop/pod_dl:20210915"
+
+VER=$(python -c "import sys;sys.path.append('/app/pod_dl/');import libs.constants as constants;print(constants.u_VER)")
+
+echo "Starting zipzop/pod_dl:$VER"
 echo "=============================================================="
 
 # Copying of the sample subscriptions file in case there is no one in the
