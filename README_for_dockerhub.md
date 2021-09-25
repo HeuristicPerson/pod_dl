@@ -93,3 +93,44 @@ in the docker image.
         volumes:
           - /docker_data/pod_dl/my_podcasts:/podcasts
         restart: "unless-stopped"
+
+## Sample output of the log ##
+
+Timestamps on each line are not shown for clarity, but you can easily activate them with `-t` option
+in docker (`docker logs -t CONTAINER_ID`) or from portainer GUI.
+
+    ##############################################################
+    #                ______      _____                           #
+    #               / _  (_)_ __/ _  / ___  _ __                 #
+    #               \// /| | '_ \// / / _ \| '_ \                #
+    #                / //\ | |_) / //\ (_) | |_) |               #
+    #               /____/_| .__/____/\___/| .__/                #
+    #                      |_|             |_|                   #
+    ##############################################################
+    
+    Starting zipzop/pod_dl:v1.0 2021-09-23
+    ==============================================================
+    - muerte tenia un podcast, la
+        - Downloading 5 latest episode(s) since 2021-09-03 07:30:00+02:00
+        - [1/1] 2021-09-24 INICIATIVA BOND #25: Skyfall (2012)... DONE! (55.1 MiB)
+        - Fixing ID3 tags... DONE!
+        - Transcoding to .ogg at 22050 Hz and 96 kbps DONE! (62.5 MiB)
+        - Keeping original file DONE!
+        - Moving file to archive location... DONE!
+        - Log sent to MU/TH/UR 6000... DONE!
+    - a quemarropa
+        - Downloading 5 latest episode(s) since 2021-09-10 13:00:00+02:00
+        - [1/1] 2021-09-24 A Quemarropa FlixOlé (9): Fernando Colomo... DONE! (26.6 MiB)
+            - Fixing ID3 tags... DONE!
+            - Transcoding to .ogg at 22050 Hz and 96 kbps DONE! (29.2 MiB)
+            - Keeping original file DONE!
+            - Moving file to archive location... DONE!
+            - Log sent to MU/TH/UR 6000... DONE!
+    - deknet
+        - Downloading 5 latest episode(s) since 2021-09-23 05:00:16+00:00
+        - [1/1] 2021-09-25 CROSSOVER con REFLEX Podcast: Mochila 72 horas para volcanes y apagones... DONE! (34.1 MiB)
+            - Fixing ID3 tags... DONE!
+            - Transcoding to .ogg at 22050 Hz and 96 kbps DONE! (0.0 B)
+            - Keeping original file DONE!
+            - Moving file to archive location... DONE!
+            - Log sent to MU/TH/UR 6000... DONE!
