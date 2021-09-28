@@ -1,3 +1,4 @@
+import codecs
 import datetime
 import io
 import logging
@@ -67,8 +68,11 @@ class Podcast(object):
         """
         Method to download episodes of the podcast
 
-        :return:
+        :return: True if at least one episode was downloaded
+        :rtype bool
         """
+
+        b_eps_dl = False
 
         o_last_update = timestamps.read_timestamp(self._get_o_timestamp())
 
@@ -150,6 +154,7 @@ class Podcast(object):
             shell.cmd_run(('mkdir', self._arc_dir().u_path))
             shell.cmd_run(('mv', o_local_file.u_path, self._arc_dir().u_path))
             timestamps.save_timestamp(self._get_o_timestamp(), o_eps.o_date_pub)
+            b_eps_dl = True
             print('DONE!')
 
             # [3/?] Run post script
@@ -164,6 +169,8 @@ class Podcast(object):
                 print(du_success[b_success])
 
         self._tidy_up_archive()
+
+        return b_eps_dl
 
     def _filter_episodes(self, po_after=None):
         """
@@ -418,7 +425,7 @@ class Episode(object):
     u_mod_title = property(fget=_get_u_mod_title, fset=None)
 
 
-# Functions
+# Helper Functions
 #=======================================================================================================================
 def _number_to_base(pi_number, pi_base):
     if pi_number == 0:
@@ -522,3 +529,44 @@ def _identify_smallest_episode(po_orig, po_trans):
             o_del = po_trans
 
     return o_keep, o_del
+
+
+# Main functions
+#=======================================================================================================================
+def build_playlist(pb_changes):
+    """
+    Function to build an m3u playlist with all episodes.
+
+    :param pb_changes:
+    :return:
+    """
+    # First we build a list with all episodes
+    #----------------------------------------
+    o_eps_root = files.FilePath(constants.u_ARC_DIR)
+    lo_pod_dirs = o_eps_root.listdir(pu_type='d')
+    lo_files = []
+    for o_pod_dir in lo_pod_dirs:
+        lo_files += o_pod_dir.listdir(pu_type='f')
+
+    lo_eps = [o_file for o_file in lo_files if o_file.has_ext('ogg', 'mp3')]
+    lo_eps.sort(key=lambda o_eps: o_eps.u_name, reverse=True)
+
+    # Then we build the relative path of each of the episodes
+    #--------------------------------------------------------
+    lu_rel_paths = []
+    for o_eps in lo_eps:
+        tu_rel_chunks = o_eps.tu_elems[-2:]
+        u_rel_path = '/'.join(tu_rel_chunks)
+        lu_rel_paths.append(u_rel_path)
+
+    # Finally we pack everything into the .m3u playlist
+    #--------------------------------------------------
+    o_fp_m3u = files.FilePath(constants.u_M3U)
+    if pb_changes or not o_fp_m3u.b_isfile:
+        u_msg = '- Generating playlist "%s"... ' % constants.u_M3U
+        print(u_msg, end='')
+        with open(constants.u_M3U, 'w') as o_file:
+            for u_rel_path in lu_rel_paths:
+                o_file.write('%s\n' % u_rel_path)
+        print('DONE!')
+

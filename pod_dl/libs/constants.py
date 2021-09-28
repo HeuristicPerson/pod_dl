@@ -10,7 +10,7 @@ u_PRG = 'Pod DL'
 
 # Program version. Always leave an space between release version and release date because the first part will appear in
 # run.sh for docker. So it looks nicer when that version number and the docker tag coincide.
-u_VER = 'v1.0.dev 2021-09-24b'
+u_VER = 'v1.0.dev 2021-09-28'
 
 # Number of retries and delay between them for downloads
 i_DL_RETRIES = 5
@@ -202,4 +202,5 @@ u_POST_SCR_MSG = ''    # Message to be printed after the execution of each episo
 _read_ini_cfg()
 _read_env_cfg()
 
-u_SUBS = '%s/subs.txt' % u_ARC_DIR  # File with podcast subscriptions
+u_SUBS = '%s/subs.txt' % u_ARC_DIR     # File with podcast subscriptions
+u_M3U = '%s/all podcast episodes.m3u' % u_ARC_DIR  # Playlist with all episodes
