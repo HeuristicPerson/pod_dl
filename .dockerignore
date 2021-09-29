@@ -2,5 +2,6 @@ container_build.sh
 container_save.sh
 .git
 .idea
+images/*
 pod_dl/test*
 */__pycache__/*

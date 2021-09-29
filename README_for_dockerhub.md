@@ -1,3 +1,5 @@
+![](https://github.com/HeuristicPerson/pod_dl/tree/v1.x.dev/images/logo-retrocomputing.png)
+
 # Pod DL docker image #
 
 ## Introduction ##
