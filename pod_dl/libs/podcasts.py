@@ -59,6 +59,10 @@ class Podcast(object):
                     o_episode = Episode(po_xml=o_elem)
                     self.lo_eps.append(o_episode)
 
+                # Some podcasts put latest episodes at the end of the feed while others put them at the beginning so
+                # we will sort the list of episodes by date, keeping the newest ones at the beginning.
+                self.lo_eps.sort(key=lambda o_ep: o_ep.o_date_pub, reverse=True)
+
                 break
 
             except urllib.error.URLError:
