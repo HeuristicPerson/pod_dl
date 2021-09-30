@@ -130,8 +130,8 @@ class Podcast(object):
 
             # [2/?] Transcoding of the episode
             if constants.b_TRANSC_SERV:
-                u_msg = '    - Transcoding to .ogg at %s Hz and %s kbps' % (constants.i_TRANSC_FREQ,
-                                                                            constants.i_TRANSC_BITR)
+                u_msg = '    - Transcoding to .ogg at %s Hz and %s kbps...' % (constants.i_TRANSC_FREQ,
+                                                                               constants.i_TRANSC_BITR)
                 print(u_msg, end=' ')
                 o_local_file_trans = _transcode_file(o_local_file,
                                                      pi_freq=constants.i_TRANSC_FREQ,
