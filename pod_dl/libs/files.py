@@ -120,7 +120,12 @@ class FilePath(object):
         Function that returns the number of seconds from epoch until the file was last modified.
         :return:
         """
-        return os.path.getmtime(self.u_path)
+        try:
+            f_mtime = os.path.getmtime(self.u_path)
+        except FileNotFoundError:
+            f_mtime = None
+
+        return f_mtime
 
     def _get_i_size(self):
         try:
@@ -131,7 +136,13 @@ class FilePath(object):
         return i_size
 
     def _get_o_mtime(self):
-        return datetime.datetime.fromtimestamp(self._get_f_mtime())
+        o_mtime = None
+
+        f_mtime = self._get_f_mtime()
+        if f_mtime is not None:
+            o_mtime = datetime.datetime.fromtimestamp(self._get_f_mtime())
+
+        return o_mtime
 
     def _get_tu_elems(self):
         """
@@ -147,7 +158,7 @@ class FilePath(object):
         lu_chunks = os.path.normpath(self.u_path).split(os.path.sep)
         if lu_chunks[0] == '':
             lu_chunks = lu_chunks[1:]
-        return lu_chunks
+        return tuple(lu_chunks)
 
     def _get_u_dir(self):
         return os.path.dirname(self._get_u_path())

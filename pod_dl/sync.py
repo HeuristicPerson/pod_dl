@@ -1,19 +1,8 @@
 #!/usr/bin/env python3
 
 import libs.constants as constants
+import libs.podcasts as podcasts
 import libs.subs as subs
-
-# Constants
-#=======================================================================================================================
-u_TEST_FEED = 'https://www.spreaker.com/show/1432098/episodes/feed'
-
-
-# Classes
-#=======================================================================================================================
-
-
-# Helper functions
-#=======================================================================================================================
 
 
 # Main code
@@ -26,6 +15,12 @@ if __name__ == '__main__':
 
     lo_subs = subs.read_subs(constants.u_SUBS)
 
+    b_any_dl = False
     for o_pod in lo_subs:
         o_pod.read_feed()
-        o_pod.dl_episodes()
+        b_pod_dl = o_pod.dl_episodes()
+        if b_pod_dl:
+            b_any_dl = True
+
+    # Building the .m3u playlist with all episodes
+    podcasts.build_playlist(b_any_dl)
