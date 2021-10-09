@@ -203,3 +203,4 @@ _read_ini_cfg()
 _read_env_cfg()
 
 u_SUBS = '%s/subs.txt' % u_ARC_DIR  # File with podcast subscriptions
+u_M3U = '%s/all podcast episodes.m3u' % u_ARC_DIR  # Playlist with all episodes
