@@ -7,8 +7,6 @@ import time
 import urllib.error
 from urllib.request import urlopen
 import urllib.request as request
-import urllib.request
-# import xml.etree.ElementTree as ElTree
 import lxml.etree
 import eyed3
 
@@ -58,8 +56,6 @@ class Podcast(object):
                 o_parser = lxml.etree.XMLParser(recover=True)
                 x_root = lxml.etree.fromstring(text=o_file.read(),
                                                parser=o_parser)
-
-                # x_root = o_tree.getroot()
 
                 for o_elem in x_root.findall('channel/item'):
                     o_episode = Episode(po_xml=o_elem)
@@ -549,10 +545,10 @@ def _identify_smallest_episode(po_orig, po_trans):
 #=======================================================================================================================
 def build_playlist(pb_changes):
     """
-    Function to build an m3u playlist with all episodes.
+    Function to build a m3u playlist with all episodes.
 
     :param pb_changes:
-    :return:
+    :type pb_changes: Bool
     """
     # First we build a list with all episodes
     #----------------------------------------
@@ -573,8 +569,8 @@ def build_playlist(pb_changes):
         u_rel_path = '/'.join(tu_rel_chunks)
         lu_rel_paths.append(u_rel_path)
 
-    # Finally we pack everything into the .m3u playlist
-    #--------------------------------------------------
+    # Finally, we pack everything into the .m3u playlist
+    #---------------------------------------------------
     o_fp_m3u = files.FilePath(constants.u_M3U)
     if pb_changes or not o_fp_m3u.b_isfile:
         u_msg = '- Generating playlist "%s"... ' % constants.u_M3U
@@ -583,4 +579,3 @@ def build_playlist(pb_changes):
             for u_rel_path in lu_rel_paths:
                 o_file.write('%s\n' % u_rel_path)
         print('DONE!')
-
