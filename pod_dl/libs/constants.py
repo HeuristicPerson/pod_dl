@@ -10,7 +10,7 @@ u_PRG = 'Pod DL'
 
 # Program version. Always leave an space between release version and release date because the first part will appear in
 # run.sh for docker. So it looks nicer when that version number and the docker tag coincide.
-u_VER = 'v1.0 2021-10-09'
+u_VER = 'v1.0 2022-01-17'
 
 # Number of retries and delay between them for downloads
 i_DL_RETRIES = 5
@@ -194,13 +194,13 @@ i_MAX_ARCH = 0         # type: int  # Max number of episodes in the archive for 
 b_TRANSC_SERV = False  # type: bool # Whether transcoding is active or not
 b_TRANSC_FORC = False  # type: bool # When true, transcoded file will always be kept no matter if it's bigger or invalid
 i_TRANSC_FREQ = 0      # type: int  # Frequency of the transcoded file
-i_TRANSC_BITR = 0      # type: int  #Bitrate of the transcoded file
+i_TRANSC_BITR = 0      # type: int  # Bitrate of the transcoded file
 
-tu_POST_SCR = ()       # Script or command to be executed after the download of each episode
-u_POST_SCR_MSG = ''    # Message to be printed after the execution of each episode
+tu_POST_SCR = ()       # type: tuple[str] # Script or command to be executed after the download of each episode
+u_POST_SCR_MSG = ''    # type: str        # Message to be printed after the execution of each episode
 
 _read_ini_cfg()
 _read_env_cfg()
 
-u_SUBS = '%s/subs.txt' % u_ARC_DIR  # File with podcast subscriptions
-u_M3U = '%s/all podcast episodes.m3u' % u_ARC_DIR  # Playlist with all episodes
+u_SUBS = '%s/subs.txt' % u_ARC_DIR                 # type: str # File with podcast subscriptions
+u_M3U = '%s/all podcast episodes.m3u' % u_ARC_DIR  # type: str # Playlist with all episodes
