@@ -196,7 +196,7 @@ b_TRANSC_FORC = False  # type: bool # When true, transcoded file will always be 
 i_TRANSC_FREQ = 0      # type: int  # Frequency of the transcoded file
 i_TRANSC_BITR = 0      # type: int  # Bitrate of the transcoded file
 
-tu_POST_SCR = ()       # type: tuple[str] # Script or command to be executed after the download of each episode
+tu_POST_SCR = tuple()  # type: tuple[str] # Script or command to be executed after the download of each episode
 u_POST_SCR_MSG = ''    # type: str        # Message to be printed after the execution of each episode
 
 _read_ini_cfg()
