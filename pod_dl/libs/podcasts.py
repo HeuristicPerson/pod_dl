@@ -1,5 +1,6 @@
 import codecs
 import datetime
+import html
 import io
 import logging
 import time
@@ -346,7 +347,9 @@ class Episode(object):
         return u_mod_title
 
     def _parse_xml(self, po_xml):
-        self.u_title = po_xml.find('title').text
+        # In theory, the title field in the xml file should be encoded to avoid xml entities, so we have to decode them
+        # to regular unicode characters
+        self.u_title = html.unescape(po_xml.find('title').text)
         self.u_url = po_xml.find('enclosure').get('url')
 
         u_date_pub = po_xml.find('pubDate').text

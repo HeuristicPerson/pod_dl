@@ -6,6 +6,7 @@ from . import podcasts
 def read_subs(pu_file):
     """
     Function to read the subscriptions from a file.
+
     :param pu_file: Path of the file with subscriptions
     :type pu_file: unicode
 
