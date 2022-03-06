@@ -1,5 +1,7 @@
 import subprocess
 
+import charset_normalizer
+
 
 # Classes
 #=======================================================================================================================
@@ -48,18 +50,26 @@ def cmd_run(plu_cmd):
     """
     o_process = subprocess.Popen(plu_cmd,
                                  bufsize=0,
-                                 universal_newlines=True,
+                                 # universal_newlines=True,
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
 
-    u_stdout, u_stderr = o_process.communicate()
+    # The output will be a bytes string (I believe)
+    b_stdout, b_stderr = o_process.communicate()
 
     i_return_code = o_process.returncode
 
     o_result = CmdResult()
     o_result.i_rcode = i_return_code
     o_result.u_cmd = u' '.join(plu_cmd)
-    o_result.u_stdout = u_stdout
-    o_result.u_stderr = u_stderr
+    try:
+        o_result.u_stdout = b_stdout.decode('utf8')
+    except UnicodeDecodeError:
+        o_result.u_stdout = charset_normalizer.from_bytes(b_stdout).best()
+
+    try:
+        o_result.u_stderr = b_stderr.decode('utf8')
+    except UnicodeDecodeError:
+        o_result.u_stderr = charset_normalizer.from_bytes(b_stderr).best()
 
     return o_result
