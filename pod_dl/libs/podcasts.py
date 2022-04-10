@@ -5,6 +5,7 @@ import io
 import logging
 import time
 
+import charset_normalizer
 import urllib.error
 from urllib.request import urlopen
 import urllib.request as request
@@ -409,27 +410,27 @@ class Episode(object):
         # TODO: Use proper album artist = podcast title. By now I leave the tag empty
         # Again... lack of consistency on album artist and jellyfin sorting episodes in a weird order so I decided to
         # replace album artist tag with the podcast name.
-        u_artist = None
+        u_artist = ''
         if po_podcast is not None:
             u_artist = po_podcast.u_name
 
         o_audiofile.tag.album_artist = u_artist
         o_audiofile.tag.artist = u_artist
 
-        u_album = None
+        u_album = ''
         if po_podcast is not None:
             u_album = po_podcast.u_name
 
         o_audiofile.tag.album = u_album
 
-        o_audiofile.tag.save()
+        o_audiofile.tag.save(encoding='utf-8')
 
-        # Finally we can read the errors and act depending on their type
-        #---------------------------------------------------------------
+        # Finally, we can read the errors and act depending on their type
+        #----------------------------------------------------------------
         u_log = o_log_stream.getvalue()
 
         if u_log:
-            # deal here with the error message which in u_log
+            # deal here with the error message in u_log
             # and then purge the o_log_stream to reuse it for next eye3d call
             o_log_stream.truncate(0)
         # all this code can be improved : enclose it in a try-catch, etc.
