@@ -1,4 +1,5 @@
 import codecs
+import copy
 import datetime
 import html
 import io
@@ -41,7 +42,7 @@ class Podcast(object):
         u_out += '  .u_feed:  %s\n' % self.u_feed
 
         if not self.lo_eps:
-            u_out = '  .lo_eps:\n'
+            u_out += '  .lo_eps:\n'
         else:
             for i_episode, o_episode in enumerate(self.lo_eps):
                 if i_episode == 0:
@@ -51,10 +52,77 @@ class Podcast(object):
         return u_out
 
     def read_feed(self):
+        """
+        Method to read a feed and populate the episodes of the Podcast.
+
+        :return: Nothing
+        """
+        # --- TEST CODE ---
+        print('------')
+        print(self)
+        # ------ end ------
+
+        # First we try to read the episodes contained in a regular podcast feed (containing .mp3 episodes and so on).
+        self.read_feed_podcast()
+        self.read_feed_youtube()
+
+        # --- TEST CODE ---
+        #print(self.lo_eps)
+        print('++++++')
+        # ------ end ------
+
+    def read_feed_youtube(self):
+        """
+        Method to identify all the episodes (videos) included in a channel rss feed.
+        :return: Nothing
+        """
+        # --- TEST CODE ---
+        # o_file = urlopen(self.u_feed)
+        # print(o_file.read())
+        # ------ end ------
+
+        #for i_try in range(constants.i_DL_RETRIES):
+        o_file = urlopen(self.u_feed)
+        o_parser = lxml.etree.XMLParser(recover=True)
+        x_root = lxml.etree.fromstring(text=o_file.read(),
+                                       parser=o_parser)
+
+        x_root = _remove_namespaces_qname(x_root)
+
+        #for x_elem in x_root.iter():
+        #    print(x_elem.tag)
+        lo_elems = x_root.findall('entry')
+        for o_elem in lo_elems:
+            u_title = o_elem.find('title').text
+            u_url = o_elem.find('link').attrib['href']
+            u_msg = '%s - %s' % (u_title, u_url)
+            print(u_msg)
+
+        #print(lxml.etree.tostring(x_root, encoding='utf8', pretty_print=True))
+        #o_elem = x_root.findall('.//title')
+        #print(o_elem)
+        #print(lxml.etree.tostring(o_elem, encoding='utf8', pretty_print=True))
+        #quit()
+
+            #for o_elem in x_root.findall('feed/entry'):
+            #    print(o_elem.tag)
+
+            #break
+
+
+            #for o_elem in x_root.findall('entry/author/uri'):
+            #    print(o_elem)
+
+        # TODO: Be specific in the except
+
+    def read_feed_podcast(self):
+        """
+        Method to identify all the episodes included in a podcast rss feed.
+        :return: Nothing
+        """
         for i_try in range(constants.i_DL_RETRIES):
             try:
                 o_file = urlopen(self.u_feed)
-                # o_tree = ElTree.parse(o_file)
                 o_parser = lxml.etree.XMLParser(recover=True)
                 x_root = lxml.etree.fromstring(text=o_file.read(),
                                                parser=o_parser)
@@ -63,8 +131,8 @@ class Podcast(object):
                     o_episode = Episode(po_xml=o_elem)
                     self.lo_eps.append(o_episode)
 
-                # Some podcasts put latest episodes at the end of the feed while others put them at the beginning so
-                # we will sort the list of episodes by date, keeping the newest ones at the beginning.
+                # Some podcasts put the latest episodes at the end of the feed while others put them at the beginning,
+                # so we will sort the list of episodes by date, keeping the newest ones at the beginning.
                 self.lo_eps.sort(key=lambda o_ep: o_ep.o_date_pub, reverse=True)
 
                 break
@@ -244,7 +312,7 @@ class Podcast(object):
         :param po_file: Actual file archived
         :type po_file: files.FilePath
 
-        :return:
+        :return: Nothing
         """
         # Preparing the post-script object
         o_post_scr = post_script.PostScript()
@@ -441,6 +509,46 @@ class Episode(object):
 
 # Helper Functions
 #=======================================================================================================================
+def _remove_namespaces_qname(po_xml, namespaces=None):
+    """
+    Function to remove namespaces from an ElementTree object. Code obtained from: https://code-examples.net/en/q/1151675
+
+    WARNING: The input object will be modified IN PLACE.
+    :param doc:
+    :type doc:
+
+    :param namespaces:
+    :type namespaces:
+
+    :return: Nothing, the original
+    """
+    o_new_xml = copy.deepcopy(po_xml)
+
+    for o_elem in o_new_xml.getiterator():
+
+        # clean tag
+        q = lxml.etree.QName(o_elem.tag)
+        if q is not None:
+            if namespaces is not None:
+                if q.namespace in namespaces:
+                    o_elem.tag = q.localname
+            else:
+                o_elem.tag = q.localname
+
+            # clean attributes
+            for a, v in o_elem.items():
+                q = lxml.etree.QName(a)
+                if q is not None:
+                    if namespaces is not None:
+                        if q.namespace in namespaces:
+                            del o_elem.attrib[a]
+                            o_elem.attrib[q.localname] = v
+                    else:
+                        del o_elem.attrib[a]
+                        o_elem.attrib[q.localname] = v
+    return o_new_xml
+
+
 def _number_to_base(pi_number, pi_base):
     if pi_number == 0:
         return [0]
