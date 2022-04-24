@@ -2,13 +2,15 @@
 
 ## Introduction ##
 
-"Pod DL" (Podcast Downloader) is a docker image containing "Pod DL" script to automatically download the latest episodes
-of your podcast subscriptions.
+"Pod DL" (Podcast Downloader) is a docker image containing "Pod DL" script to
+automatically download the latest episodes of your podcast subscriptions.
 
 To get the already built docker image, please go to
-[hub.docker.com/r/zipzop/pod_dl](https://hub.docker.com/r/zipzop/pod_dl) or, if you just want to get the downloader
-script, please download folder [pod_dl](https://github.com/HeuristicPerson/pod_dl/tree/v1.0/pod_dl) and checkout
-[README.md](https://github.com/HeuristicPerson/pod_dl/blob/v1.0/pod_dl/README.md) in it.
+[hub.docker.com/r/zipzop/pod_dl](https://hub.docker.com/r/zipzop/pod_dl) or, if
+you just want to get the downloader script, please download folder
+[pod_dl](https://github.com/HeuristicPerson/pod_dl/tree/v1.0/pod_dl) and
+checkout [README.md](https://github.com/HeuristicPerson/pod_dl/blob/v1.0/pod_dl/README.md)
+in it.
 
 
 ## Configuration options ## 
@@ -62,6 +64,17 @@ For example:
     deknet;https://www.spreaker.com/show/1432098/episodes/feed
     freak n films;https://www.ivoox.com/freak-n-films_fg_f1786649_filtro_1.xml
     metodologic podcast;https://www.ivoox.com/feed_fg_f1284079_filtro_1.xml
+
+Pod DL is able to download audio files from Youtube channels as if they were
+regular podcasts. You only need to specify the URL of the channel RSS like in
+the example below:
+
+    my youtube channel; https://www.youtube.com/feeds/videos.xml?channel_id=VCRciVcT7tffYNFmDj2AmnkQ
+
+You'll need to replace 'VCRciVcT7tffYNFmDj2AmnkQ' by the proper id of the
+channel you're interested in. In the web broswer, open the Youtube channel and
+press Ctrl-U to see the source code of the page. Search
+`https://www.youtube.com/channel/` and there you'll see the channel id.
 
 
 ## Sample Docker Compose file ##
