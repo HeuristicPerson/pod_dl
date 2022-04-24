@@ -1,4 +1,3 @@
-import codecs
 import copy
 import datetime
 import html
@@ -6,7 +5,6 @@ import io
 import logging
 import time
 
-import charset_normalizer
 import urllib.error
 from urllib.request import urlopen
 import urllib.request as request
@@ -452,7 +450,7 @@ class Episode(object):
         }
 
         with youtube_dl.YoutubeDL(dx_dl_options) as o_yt_downloader:
-           o_yt_downloader.download([self.u_url])
+            o_yt_downloader.download([self.u_url])
 
         # Probably there is a better way of detecting an error during the download but I'll check whether the file
         # exists (because the extension is just .part until the download and post-processing is completed)
@@ -603,18 +601,18 @@ class Episode(object):
 
 # Helper Functions
 #=======================================================================================================================
-def _remove_namespaces_qname(po_xml, namespaces=None):
+def _remove_namespaces_qname(po_xml, lu_namespaces=None):
     """
     Function to remove namespaces from an ElementTree object. Code obtained from: https://code-examples.net/en/q/1151675
 
-    WARNING: The input object will be modified IN PLACE.
-    :param doc:
-    :type doc:
+    :param po_xml: XML element to be modified.
+    :type po_xml: lxml.etree.ElementTree
 
-    :param namespaces:
-    :type namespaces:
+    :param lu_namespaces: List of namespaces to be removed
+    :type lu_namespaces: List[Str]
 
-    :return: Nothing, the original
+    :return: A modified XML element without the desired namespaces.
+    :rtype lxml.etree.ElementTree
     """
     o_new_xml = copy.deepcopy(po_xml)
 
@@ -623,8 +621,8 @@ def _remove_namespaces_qname(po_xml, namespaces=None):
         # clean tag
         q = lxml.etree.QName(o_elem.tag)
         if q is not None:
-            if namespaces is not None:
-                if q.namespace in namespaces:
+            if lu_namespaces is not None:
+                if q.namespace in lu_namespaces:
                     o_elem.tag = q.localname
             else:
                 o_elem.tag = q.localname
@@ -633,8 +631,8 @@ def _remove_namespaces_qname(po_xml, namespaces=None):
             for a, v in o_elem.items():
                 q = lxml.etree.QName(a)
                 if q is not None:
-                    if namespaces is not None:
-                        if q.namespace in namespaces:
+                    if lu_namespaces is not None:
+                        if q.namespace in lu_namespaces:
                             del o_elem.attrib[a]
                             o_elem.attrib[q.localname] = v
                     else:
