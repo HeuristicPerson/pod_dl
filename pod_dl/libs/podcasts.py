@@ -163,6 +163,7 @@ class Podcast(object):
             # [1/?] Downloading of the episode
             print(u_msg, end=' ')
             o_local_file = o_eps.download(self._tmp_dir())
+
             if o_local_file is None:
                 u_msg = 'ERROR! file couldn\'t be downloaded, interrupting process for this podcast'
                 print(u_msg)
@@ -452,6 +453,12 @@ class Episode(object):
 
         with youtube_dl.YoutubeDL(dx_dl_options) as o_yt_downloader:
            o_yt_downloader.download([self.u_url])
+
+        # Probably there is a better way of detecting an error during the download but I'll check whether the file
+        # exists (because the extension is just .part until the download and post-processing is completed)
+
+        if not o_local_file.b_isfile:
+            o_local_file = None
 
         return o_local_file
 
