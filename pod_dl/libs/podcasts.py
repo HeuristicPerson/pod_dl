@@ -57,6 +57,8 @@ class Podcast(object):
 
         :return: Nothing
         """
+        # TODO: If any problem is found when parsing the feeds, print the error and jump to the next feed.
+
         # First we try to read the episodes contained in a regular podcast feed (containing .mp3 episodes and so on).
         self.read_feed_podcast()
         self.read_feed_youtube()
@@ -82,7 +84,7 @@ class Podcast(object):
 
                 break
 
-            # TODO: Be more specific with the except
+            # TODO: Be more specific with the except similarly to what we do with podcast feeds
             except:
                 pass
 
@@ -108,8 +110,21 @@ class Podcast(object):
 
                 break
 
+            # If the feed didn't download properly
             except urllib.error.URLError:
                 time.sleep(constants.i_DL_RETRY_DELAY)
+
+            # If any of the entries in the feed didn't contain all required data
+            except FeedFormatError:
+                time.sleep(constants.i_DL_RETRY_DELAY)
+
+        # This code below is only reached when the for loop is completed => the max number of tries was reached
+        # without success.
+        else:
+            u_msg = ''
+            u_msg += 'Error reading feed for podcast "%s":\n' % self.u_name
+            u_msg += '  %s' % self.u_feed
+            print(u_msg)
 
     def dl_episodes(self):
         """
@@ -508,12 +523,22 @@ class Episode(object):
         self.o_date_pub = datetime.datetime.strptime(u_date_pub, u_date_pat)
 
     def _parse_podcast_xml(self, po_xml):
+        # TODO: Any problem in the RSS will make the parsing to fail and the program to crash.
+        # Make the program robust to those failures, if a RSS feed produces errors, print a descriptive error and jump
+        # to the next feed.
+
         # In theory, the title field in the xml file should be encoded to avoid xml entities, so we have to decode them
         # to regular unicode characters
         self.u_title = html.unescape(po_xml.find('title').text)
         self.u_url = po_xml.find('enclosure').get('url')
 
-        u_date_pub = po_xml.find('pubDate').text
+        # trying to catch a problem with some feeds missing the pubDate tag
+        try:
+            u_date_pub = po_xml.find('pubDate').text
+        except AttributeError:
+            raise FeedFormatError(pu_short_msg='ERROR: missing publication date in episode entry.',
+                                  pu_long_msg=lxml.etree.tostring(po_xml))
+
         u_date_pat = '%a, %d %b %Y %H:%M:%S %z'
         self.o_date_pub = datetime.datetime.strptime(u_date_pub, u_date_pat)
 
@@ -597,6 +622,35 @@ class Episode(object):
         # --- end ---
 
     u_mod_title = property(fget=_get_u_mod_title, fset=None)
+
+
+# Exceptions
+#=======================================================================================================================
+class FeedFormatError(Exception):
+    """
+    Exception raised when the format of an XML feed is wrong.
+
+    Attributes:
+        salary -- input salary which caused the error
+        message -- explanation of the error
+    """
+
+    def __init__(self, pu_short_msg='', pu_long_msg=''):
+        self.u_short_msg = pu_short_msg
+        self.u_long_msg = pu_long_msg
+        super().__init__(self.u_short_msg)
+
+    def nice_format(self):
+        """
+        Method to generate a nice format string to be printed in screen or saved to human-readable files.
+        :return: The human-readable description of the Exception
+        :rtype Str
+        """
+        u_out = '------\n'
+        u_out += '%s\n' % self.u_short_msg
+        u_out += '%s' % self.u_long_msg
+        u_out = '------'
+        return u_out
 
 
 # Helper Functions
