@@ -10,7 +10,7 @@ import libs.subs as subs
 if __name__ == '__main__':
     if constants.b_DEBUG:
         u_prog_and_ver = '%s - %s' % (constants.u_PRG, constants.u_VER)
-        print('%s\n%s' % (u_prog_and_ver, '=' * len(constants.u_PRG)))
+        print('%s\n%s' % (u_prog_and_ver, '=' * len(u_prog_and_ver)))
         constants.print_constants()
 
     lo_subs = subs.read_subs(constants.u_SUBS)

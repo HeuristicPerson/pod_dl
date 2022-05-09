@@ -1,16 +1,17 @@
-import codecs
+import copy
 import datetime
 import html
 import io
 import logging
 import time
 
-import charset_normalizer
 import urllib.error
 from urllib.request import urlopen
 import urllib.request as request
+import urllib.parse
 import lxml.etree
 import eyed3
+import youtube_dl
 
 from . import constants
 from . import files
@@ -41,7 +42,7 @@ class Podcast(object):
         u_out += '  .u_feed:  %s\n' % self.u_feed
 
         if not self.lo_eps:
-            u_out = '  .lo_eps:\n'
+            u_out += '  .lo_eps:\n'
         else:
             for i_episode, o_episode in enumerate(self.lo_eps):
                 if i_episode == 0:
@@ -51,10 +52,50 @@ class Podcast(object):
         return u_out
 
     def read_feed(self):
+        """
+        Method to read a feed and populate the episodes of the Podcast.
+
+        :return: Nothing
+        """
+        # TODO: If any problem is found when parsing the feeds, print the error and jump to the next feed.
+
+        # First we try to read the episodes contained in a regular podcast feed (containing .mp3 episodes and so on).
+        self.read_feed_podcast()
+        self.read_feed_youtube()
+
+    def read_feed_youtube(self):
+        """
+        Method to identify all the episodes (videos) included in a channel rss feed.
+        :return: Nothing
+        """
         for i_try in range(constants.i_DL_RETRIES):
             try:
                 o_file = urlopen(self.u_feed)
-                # o_tree = ElTree.parse(o_file)
+                o_parser = lxml.etree.XMLParser(recover=True)
+                x_root = lxml.etree.fromstring(text=o_file.read(),
+                                               parser=o_parser)
+
+                x_root = _remove_namespaces_qname(x_root)
+
+                lo_elems = x_root.findall('entry')
+                for o_elem in lo_elems:
+                    o_episode = Episode(po_xml=o_elem)
+                    self.lo_eps.append(o_episode)
+
+                break
+
+            # TODO: Be more specific with the except similarly to what we do with podcast feeds
+            except:
+                pass
+
+    def read_feed_podcast(self):
+        """
+        Method to identify all the episodes included in a podcast rss feed.
+        :return: Nothing
+        """
+        for i_try in range(constants.i_DL_RETRIES):
+            try:
+                o_file = urlopen(self.u_feed)
                 o_parser = lxml.etree.XMLParser(recover=True)
                 x_root = lxml.etree.fromstring(text=o_file.read(),
                                                parser=o_parser)
@@ -63,14 +104,27 @@ class Podcast(object):
                     o_episode = Episode(po_xml=o_elem)
                     self.lo_eps.append(o_episode)
 
-                # Some podcasts put latest episodes at the end of the feed while others put them at the beginning so
-                # we will sort the list of episodes by date, keeping the newest ones at the beginning.
+                # Some podcasts put the latest episodes at the end of the feed while others put them at the beginning,
+                # so we will sort the list of episodes by date, keeping the newest ones at the beginning.
                 self.lo_eps.sort(key=lambda o_ep: o_ep.o_date_pub, reverse=True)
 
                 break
 
+            # If the feed didn't download properly
             except urllib.error.URLError:
                 time.sleep(constants.i_DL_RETRY_DELAY)
+
+            # If any of the entries in the feed didn't contain all required data
+            except FeedFormatError:
+                time.sleep(constants.i_DL_RETRY_DELAY)
+
+        # This code below is only reached when the for loop is completed => the max number of tries was reached
+        # without success.
+        else:
+            u_msg = ''
+            u_msg += 'Error reading feed for podcast "%s":\n' % self.u_name
+            u_msg += '  %s' % self.u_feed
+            print(u_msg)
 
     def dl_episodes(self):
         """
@@ -122,7 +176,14 @@ class Podcast(object):
             # [1/?] Downloading of the episode
             print(u_msg, end=' ')
             o_local_file = o_eps.download(self._tmp_dir())
-            print('DONE! (%s)' % o_local_file.u_size)
+
+            if o_local_file is None:
+                u_msg = 'ERROR! file couldn\'t be downloaded, interrupting process for this podcast'
+                print(u_msg)
+                break
+            else:
+                u_msg = 'DONE! (%s)' % o_local_file.u_size
+                print(u_msg)
 
             # [2/?] Fixing ID3 tags of the episode
             # TODO: Not sure if process should be a method of podcasts or episodes. For example, if I wanted to use the
@@ -182,7 +243,7 @@ class Podcast(object):
 
     def _filter_episodes(self, po_after=None):
         """
-        Method to filter out episodes before an specific date (including it).
+        Method to filter out episodes before a specific date (including it).
 
         :param po_after:
         :type po_after: datetime.datetime.Datetime
@@ -244,7 +305,7 @@ class Podcast(object):
         :param po_file: Actual file archived
         :type po_file: files.FilePath
 
-        :return:
+        :return: Nothing
         """
         # Preparing the post-script object
         o_post_scr = post_script.PostScript()
@@ -306,7 +367,7 @@ class Episode(object):
 
     def __str__(self):
         u_out = '<Episode>\n'
-        u_out += '  .u_name:     %s\n' % self.u_title
+        u_out += '  .u_name:      %s\n' % self.u_title
         u_out += '  .u_mod_title: %s\n' % self.u_mod_title
         u_out += '  .u_url:       %s\n' % self.u_url
         u_out += '  .o_date:      %s\n' % self.o_date_pub
@@ -322,10 +383,96 @@ class Episode(object):
         :return: The local path of the downloaded file.
         :rtype Union[unicode, None]
         """
-        u_ext = self.u_url.rpartition('.')[2]
-        u_filename = '%s - %s.%s' % (self.o_date_pub.strftime('%Y-%m-%d'), self.u_title, u_ext)
+        u_filename = '%s - %s' % (self.o_date_pub.strftime('%Y-%m-%d'), self.u_title)
+        o_local_file = None
 
-        o_local_file = _dl_file(self.u_url, po_dir, pu_name=u_filename)
+        for i_retry in range(constants.i_DL_RETRIES):
+            try:
+                if self.u_url.startswith('https://www.youtube.com/'):
+                    o_local_file = self._download_yt_audio(po_dir, u_filename)
+                    break
+                else:
+                    o_local_file = self._download_file(po_dir, u_filename)
+                    break
+
+            # TODO: Remove the debug print once the code is able to ignore common exceptions
+            except Exception as o_exception:
+                if type(o_exception).__name__ == 'DownloadError':
+                    pass
+                else:
+                    u_msg = 'An exception of type %s occurred. Arguments:\n%s' % (type(o_exception).__name__,
+                                                                                  o_exception.args)
+                    print(u_msg)
+
+                time.sleep(constants.i_DL_RETRY_DELAY)
+
+        return o_local_file
+
+    def _download_file(self, po_dir, pu_name):
+        """
+        Method to download a remote file when we have it's full URL. e.g. http://jonh.com/file.mp3
+
+        :param po_dir: Directory where the file should be saved.
+        :type po_dir: files.FilePath
+
+        :param pu_name: Local name of the file to be saved
+        :type pu_name: Str
+
+        :return The local file FilePath object.
+        :rtype files.FilePath
+        """
+        # Sometimes, the URL doesn't just contain the file name but also some parameters. e.g. ".mp3?d=1646904795" so we
+        # need to remove them. I don't know if the dot is a valid character in the URL
+        u_clean_url = urllib.parse.urljoin(self.u_url, urllib.parse.urlparse(self.u_url).path)
+        u_ext = u_clean_url.rpartition('.')[2]
+
+        # After we get the clean extension, we can download the file
+        o_local_file = _dl_file(self.u_url, po_dir, pu_name='%s.%s' % (pu_name, u_ext))
+        return o_local_file
+
+    def _download_yt_audio(self, po_dir, pu_name):
+        """
+        Method to download the audio from a Youtube video to a local file.
+
+        :param po_dir: Directory where the file should be saved.
+        :type po_dir: files.FilePath
+
+        :param pu_name: Local name of the file to be saved
+        :type pu_name: Str
+
+        :return The local file FilePath object.
+        :rtype files.FilePath
+        """
+        o_local_file = files.FilePath(po_dir.u_path, '%s.mp3' % pu_name)
+
+        # For the output file name we won't use a template but a final name. So, if we were downloading multiple files,
+        # all of them would have the same name and just one file would be created and overwritten multiple times. In
+        # reality, we will only use the Youtube downloader to download a single file each time, making this approach not
+        # a problem at all.
+
+        u_tmp_file_name = '%s/%s.%%(ext)s' % (po_dir.u_path, pu_name)
+
+        dx_dl_options = {
+            'format': 'bestaudio/best',
+            'only_audio': True,
+            'quiet': True,
+            'outtmpl': u_tmp_file_name,
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192',
+            }],
+        }
+
+        with youtube_dl.YoutubeDL(dx_dl_options) as o_yt_downloader:
+            o_yt_downloader.download([self.u_url])
+
+        # Probably there is a better way of detecting an error during the download but I'll check whether the file
+        # exists (because the extension is just .part until the download and post-processing is completed)
+
+        if not o_local_file.b_isfile:
+            o_local_file = None
+
         return o_local_file
 
     def str_oneline(self):
@@ -344,16 +491,54 @@ class Episode(object):
         :return:
         """
         u_mod_title = '%s - %s' % (self.o_date_pub.strftime('%y-%m-%d'), self.u_title)
-
         return u_mod_title
 
     def _parse_xml(self, po_xml):
+        """
+        Parent method to call other child-parsers depending on the format of the xml chunk to read.
+        :param po_xml:
+        :return:
+        """
+        # Youtube elements are contained within 'entry' tags
+        if po_xml.tag == 'entry':
+            self._parse_youtube_xml(po_xml)
+        # While regular podcast RSS episodes are enclosed by 'item' tags
+        elif po_xml.tag == 'item':
+            self._parse_podcast_xml(po_xml)
+
+    def _parse_youtube_xml(self, po_xml):
+        """
+        Method to populate the episode from a Youtube RSS xml.
+
+        :param po_xml:
+        :type po_xml: lxml.etree.ElementTree
+
+        :return: Nothing
+        """
+        self.u_title = po_xml.find('title').text
+        self.u_url = po_xml.find('link').attrib['href']
+
+        u_date_pub = po_xml.find('published').text
+        u_date_pat = '%Y-%m-%dT%H:%M:%S%z'
+        self.o_date_pub = datetime.datetime.strptime(u_date_pub, u_date_pat)
+
+    def _parse_podcast_xml(self, po_xml):
+        # TODO: Any problem in the RSS will make the parsing to fail and the program to crash.
+        # Make the program robust to those failures, if a RSS feed produces errors, print a descriptive error and jump
+        # to the next feed.
+
         # In theory, the title field in the xml file should be encoded to avoid xml entities, so we have to decode them
         # to regular unicode characters
         self.u_title = html.unescape(po_xml.find('title').text)
         self.u_url = po_xml.find('enclosure').get('url')
 
-        u_date_pub = po_xml.find('pubDate').text
+        # trying to catch a problem with some feeds missing the pubDate tag
+        try:
+            u_date_pub = po_xml.find('pubDate').text
+        except AttributeError:
+            raise FeedFormatError(pu_short_msg='ERROR: missing publication date in episode entry.',
+                                  pu_long_msg=lxml.etree.tostring(po_xml))
+
         u_date_pat = '%a, %d %b %Y %H:%M:%S %z'
         self.o_date_pub = datetime.datetime.strptime(u_date_pub, u_date_pat)
 
@@ -439,8 +624,77 @@ class Episode(object):
     u_mod_title = property(fget=_get_u_mod_title, fset=None)
 
 
+# Exceptions
+#=======================================================================================================================
+class FeedFormatError(Exception):
+    """
+    Exception raised when the format of an XML feed is wrong.
+
+    Attributes:
+        salary -- input salary which caused the error
+        message -- explanation of the error
+    """
+
+    def __init__(self, pu_short_msg='', pu_long_msg=''):
+        self.u_short_msg = pu_short_msg
+        self.u_long_msg = pu_long_msg
+        super().__init__(self.u_short_msg)
+
+    def nice_format(self):
+        """
+        Method to generate a nice format string to be printed in screen or saved to human-readable files.
+        :return: The human-readable description of the Exception
+        :rtype Str
+        """
+        u_out = '------\n'
+        u_out += '%s\n' % self.u_short_msg
+        u_out += '%s' % self.u_long_msg
+        u_out = '------'
+        return u_out
+
+
 # Helper Functions
 #=======================================================================================================================
+def _remove_namespaces_qname(po_xml, lu_namespaces=None):
+    """
+    Function to remove namespaces from an ElementTree object. Code obtained from: https://code-examples.net/en/q/1151675
+
+    :param po_xml: XML element to be modified.
+    :type po_xml: lxml.etree.ElementTree
+
+    :param lu_namespaces: List of namespaces to be removed
+    :type lu_namespaces: List[Str]
+
+    :return: A modified XML element without the desired namespaces.
+    :rtype lxml.etree.ElementTree
+    """
+    o_new_xml = copy.deepcopy(po_xml)
+
+    for o_elem in o_new_xml.getiterator():
+
+        # clean tag
+        q = lxml.etree.QName(o_elem.tag)
+        if q is not None:
+            if lu_namespaces is not None:
+                if q.namespace in lu_namespaces:
+                    o_elem.tag = q.localname
+            else:
+                o_elem.tag = q.localname
+
+            # clean attributes
+            for a, v in o_elem.items():
+                q = lxml.etree.QName(a)
+                if q is not None:
+                    if lu_namespaces is not None:
+                        if q.namespace in lu_namespaces:
+                            del o_elem.attrib[a]
+                            o_elem.attrib[q.localname] = v
+                    else:
+                        del o_elem.attrib[a]
+                        o_elem.attrib[q.localname] = v
+    return o_new_xml
+
+
 def _number_to_base(pi_number, pi_base):
     if pi_number == 0:
         return [0]

@@ -71,6 +71,17 @@ For example:
     freak n films;https://www.ivoox.com/freak-n-films_fg_f1786649_filtro_1.xml
     metodologic podcast;https://www.ivoox.com/feed_fg_f1284079_filtro_1.xml
 
+Pod DL is able to download audio files from Youtube channels as if they were
+regular podcasts. You only need to specify the URL of the channel RSS like in
+the example below:
+
+    my youtube channel; https://www.youtube.com/feeds/videos.xml?channel_id=VCRciVcT7tffYNFmDj2AmnkQ
+
+You'll need to replace 'VCRciVcT7tffYNFmDj2AmnkQ' by the proper id of the
+channel you're interested in. In the web browser, open the Youtube channel and
+press Ctrl-U to see the source code of the page. Search
+`https://www.youtube.com/channel/` and there you'll see the channel id.
+
 
 ## Sample Docker Compose file ##
 

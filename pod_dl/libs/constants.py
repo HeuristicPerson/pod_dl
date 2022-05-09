@@ -8,9 +8,9 @@ import os
 # Program name
 u_PRG = 'Pod DL'
 
-# Program version. Always leave an space between release version and release date because the first part will appear in
+# Program version. Always leave a space between release version and release date because the first part will appear in
 # run.sh for docker. So it looks nicer when that version number and the docker tag coincide.
-u_VER = 'v1.1 2022-04-02'
+u_VER = 'v1.1 2022-05-09'
 
 # Number of retries and delay between them for downloads
 i_DL_RETRIES = 5
@@ -29,7 +29,8 @@ _tu_ON_VALUES = ('yes', '1', 'on', 'true', 'y')
 def _read_ini_cfg():
     """
     Function to initialize constants from configuration file
-    :return:
+
+    :return: Nothing
     """
     global b_DEBUG
     global i_MAX_ARCH
@@ -91,8 +92,9 @@ def _read_ini_cfg():
 def _read_env_cfg():
     """
     Function to initialise constants from environment variables. These variables will overwrite values included in the
-    ini file
-    :return:
+    ini file.
+
+    :return: Nothing
     """
     global b_DEBUG
     global i_MAX_ARCH
