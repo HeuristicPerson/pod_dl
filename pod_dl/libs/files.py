@@ -83,19 +83,22 @@ class FilePath(object):
         :rtype  list[FilePath]
         """
         lo_elems = []
-        for u_elem in os.listdir(self.u_path):
-            o_elem = FilePath(self.u_path, u_elem)
-            b_valid = False
+        try:
+            for u_elem in os.listdir(self.u_path):
+                o_elem = FilePath(self.u_path, u_elem)
+                b_valid = False
 
-            if pu_type == u_TYPE_ALL:
-                b_valid = True
-            elif (pu_type == u_TYPE_DIR) and o_elem.b_isdir:
-                b_valid = True
-            elif (pu_type == u_TYPE_FILE) and o_elem.b_isfile:
-                b_valid = True
+                if pu_type == u_TYPE_ALL:
+                    b_valid = True
+                elif (pu_type == u_TYPE_DIR) and o_elem.b_isdir:
+                    b_valid = True
+                elif (pu_type == u_TYPE_FILE) and o_elem.b_isfile:
+                    b_valid = True
 
-            if b_valid:
-                lo_elems.append(o_elem)
+                if b_valid:
+                    lo_elems.append(o_elem)
+        except FileNotFoundError:
+            pass
 
         return lo_elems
 

@@ -5,6 +5,7 @@
 "Pod DL" (Podcast Downloader) is a Python 3 script to automatically download the latest episodes of a list of podcast
 feeds (your subscriptions) included in a `subs.txt` file.
 
+
 ## Configuration using `pod_dl.ini` ##
 
 You can configure "Pod DL" to suit your needs by editing the file `pod_dl.ini`. Available options and their meaning are:
@@ -85,6 +86,6 @@ about `pod_dl.ini` to know more about them.
 ## TODO ##
 
   * [ ] Make sure downloader continues working fine if an episode download is interrupted
-  * [ ] Retry episode downloads if anything fails
+  * [x] Retry episode downloads if anything fails
   * [ ] Check transcoding errors with ffmpeg. Why do they happen? any way of preventing them?
   * [ ] Launch two different scripts depending on whether an episode downloaded correctly or not
