@@ -19,7 +19,9 @@ def read_timestamp(po_file):
     """
     try:
         with codecs.open(po_file.u_path, 'r', 'utf8') as o_file:
-            o_datetime = datetime.datetime.strptime(o_file.read(), _u_FORMAT)
+            u_date = o_file.read().strip()
+            o_datetime = datetime.datetime.strptime(u_date, _u_FORMAT)
+
     except (FileNotFoundError, NotADirectoryError):
         o_datetime = None
 
