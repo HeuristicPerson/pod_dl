@@ -518,11 +518,19 @@ class Episode(object):
         try:
             self.u_title = po_xml.find('title').text
         except AttributeError:
+            # --- test code ---
+            u_msg = 'Error parsing episode title from %s' % po_xml
+            print(u_msg)
+            # ------ end ------
             pass
 
         try:
             self.u_url = po_xml.find('link').attrib['href']
         except AttributeError:
+            # --- test code ---
+            u_msg = 'Error parsing episode url from %s' % po_xml
+            print(u_msg)
+            # ------ end ------
             pass
 
         try:
@@ -530,6 +538,11 @@ class Episode(object):
             u_date_pat = '%Y-%m-%dT%H:%M:%S%z'
             self.o_date_pub = datetime.datetime.strptime(u_date_pub, u_date_pat)
         except AttributeError:
+            # --- test code ---
+            u_msg = 'Error parsing episode date from %s' % po_xml
+            print(u_msg)
+            # ------ end ------
+
             pass
 
     def _parse_podcast_xml(self, po_xml):
