@@ -39,16 +39,16 @@ class Podcast(object):
     def __str__(self):
         u_out = '<Podcast>\n'
         u_out += '  .u_name: %s\n' % self.u_name
-        u_out += '  .u_feed:  %s\n' % self.u_feed
+        u_out += '  .u_feed: %s\n' % self.u_feed
 
         if not self.lo_eps:
             u_out += '  .lo_eps:\n'
         else:
             for i_episode, o_episode in enumerate(self.lo_eps):
                 if i_episode == 0:
-                    u_out += '  .lo_eps:  %s\n' % o_episode.str_oneline()
+                    u_out += '  .lo_eps: %s\n' % o_episode.str_oneline()
                 else:
-                    u_out += '            %s\n' % o_episode.str_oneline()
+                    u_out += '           %s\n' % o_episode.str_oneline()
         return u_out
 
     def read_feed(self):
@@ -499,7 +499,7 @@ class Episode(object):
         :param po_xml:
         :return:
         """
-        # Youtube elements are contained within 'entry' tags
+        # YouTube elements are contained within 'entry' tags
         if po_xml.tag == 'entry':
             self._parse_youtube_xml(po_xml)
         # While regular podcast RSS episodes are enclosed by 'item' tags
@@ -508,19 +508,29 @@ class Episode(object):
 
     def _parse_youtube_xml(self, po_xml):
         """
-        Method to populate the episode from a Youtube RSS xml.
+        Method to populate the episode from a YouTube RSS xml.
 
         :param po_xml:
         :type po_xml: lxml.etree.ElementTree
 
         :return: Nothing
         """
-        self.u_title = po_xml.find('title').text
-        self.u_url = po_xml.find('link').attrib['href']
+        try:
+            self.u_title = po_xml.find('title').text
+        except AttributeError:
+            pass
 
-        u_date_pub = po_xml.find('published').text
-        u_date_pat = '%Y-%m-%dT%H:%M:%S%z'
-        self.o_date_pub = datetime.datetime.strptime(u_date_pub, u_date_pat)
+        try:
+            self.u_url = po_xml.find('link').attrib['href']
+        except AttributeError:
+            pass
+
+        try:
+            u_date_pub = po_xml.find('published').text
+            u_date_pat = '%Y-%m-%dT%H:%M:%S%z'
+            self.o_date_pub = datetime.datetime.strptime(u_date_pub, u_date_pat)
+        except AttributeError:
+            pass
 
     def _parse_podcast_xml(self, po_xml):
         # TODO: Any problem in the RSS will make the parsing to fail and the program to crash.
