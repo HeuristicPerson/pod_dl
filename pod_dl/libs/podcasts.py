@@ -546,14 +546,17 @@ class Episode(object):
             pass
 
     def _parse_podcast_xml(self, po_xml):
-        # TODO: Any problem in the RSS will make the parsing to fail and the program to crash.
-        # Make the program robust to those failures, if a RSS feed produces errors, print a descriptive error and jump
-        # to the next feed.
-
         # In theory, the title field in the xml file should be encoded to avoid xml entities, so we have to decode them
         # to regular unicode characters
-        self.u_title = html.unescape(po_xml.find('title').text)
-        self.u_url = po_xml.find('enclosure').get('url')
+        try:
+            self.u_title = html.unescape(po_xml.find('title').text)
+        except AttributeError:
+            raise FeedFormatError(pu_short_msg='ERROR: missing title in episode entry.')
+            
+        try:
+            self.u_url = po_xml.find('enclosure').get('url')
+        except AttributeError:
+            raise FeedFormatError(pu_short_msg='ERROR: missing URL in episode entry.')
 
         # trying to catch a problem with some feeds missing the pubDate tag
         try:
