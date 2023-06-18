@@ -18,6 +18,7 @@ i_DL_RETRY_DELAY = 10
 
 # Main configuration file
 _u_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+s_TEST_DATA_ROOT = os.path.join(_u_ROOT, 'test', 'test_data')
 _u_CFG_FILE = os.path.join(_u_ROOT, 'pod_dl.ini')
 
 # Values that will indicate yes in an environment variable

@@ -594,8 +594,13 @@ class Episode(object):
         o_audiofile = eyed3.load(po_file.u_path)
 
         # Some episodes could not have tags at all, so we have to initialise them first
-        if o_audiofile.tag is None:
-            o_audiofile.initTag()
+        # if o_audiofile.tag is None:
+        #    o_audiofile.initTag()
+
+        o_audiofile.initTag(version=(2, 4, 0))
+
+        # For robustness, it's better to convert all tags to a fixed format
+        #o_audiofile.
 
         # The title will contain a unique alphabetic tag at the beginning so audio programs without support for podcasts
         # (e.g. jellyfin) will have proper order of episodes when sorting episodes alphabetically by title.
