@@ -6,20 +6,20 @@ import os
 # Program constants that users shouldn't modify Constants
 #=======================================================================================================================
 # Program name
-u_PRG = 'Pod DL'
+s_PRG = 'Pod DL'
 
 # Program version. Always leave a space between release version and release date because the first part will appear in
 # run.sh for docker. So it looks nicer when that version number and the docker tag coincide.
-u_VER = 'v1.1.dev 2022-10-24'
+s_VER = 'v1.1.dev 2023-06-19'
 
 # Number of retries and delay between them for downloads
 i_DL_RETRIES = 5
 i_DL_RETRY_DELAY = 10
 
 # Main configuration file
-_u_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-s_TEST_DATA_ROOT = os.path.join(_u_ROOT, 'test', 'test_data')
-_u_CFG_FILE = os.path.join(_u_ROOT, 'pod_dl.ini')
+_s_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+s_TEST_DATA_ROOT = os.path.join(_s_ROOT, 'test', 'test_data')
+_s_CFG_FILE = os.path.join(_s_ROOT, 'pod_dl.ini')
 
 # Values that will indicate yes in an environment variable
 _tu_ON_VALUES = ('yes', '1', 'on', 'true', 'y')
@@ -46,7 +46,7 @@ def _read_ini_cfg():
     global i_TRANSC_BITR
 
     o_config = configparser.RawConfigParser()
-    o_config.read(_u_CFG_FILE)
+    o_config.read(_s_CFG_FILE)
 
     # Debug mode
     b_DEBUG = False
