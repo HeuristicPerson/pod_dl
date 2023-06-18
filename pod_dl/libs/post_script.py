@@ -73,7 +73,7 @@ class PostScript(object):
         if o_result.i_rcode == 0:
             b_success = True
 
-        # --- TEST CODE ---
+        # --- test code ---
         else:
             print(o_result.nice_format())
             quit()

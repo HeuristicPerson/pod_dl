@@ -9,7 +9,7 @@ import libs.subs as subs
 #=======================================================================================================================
 if __name__ == '__main__':
     if constants.b_DEBUG:
-        u_prog_and_ver = '%s - %s' % (constants.u_PRG, constants.u_VER)
+        u_prog_and_ver = '%s - %s' % (constants.s_PRG, constants.s_VER)
         print('%s\n%s' % (u_prog_and_ver, '=' * len(u_prog_and_ver)))
         constants.print_constants()
 

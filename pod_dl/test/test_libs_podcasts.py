@@ -1,5 +1,4 @@
 import datetime
-import os
 import unittest
 
 import libs.constants as constants
@@ -42,7 +41,6 @@ class TestLibsPodcastsClassEpisode(unittest.TestCase):
         #---------------------------
         o_episode.fix_tags(po_file=o_local_file,
                            po_podcast=None)
-
 
         self.assertEqual(True, False)
 
