@@ -10,7 +10,7 @@ echo "#                      |_|             |_|                   #"
 echo '##############################################################'
 echo ""
 
-VER=$(python -c "import sys;sys.path.append('/app/pod_dl/');import libs.constants as constants;print(constants.u_VER)")
+VER=$(python -c "import sys;sys.path.append('/app/pod_dl/');import libs.constants as constants;print(constants.s_VER)")
 
 echo "Starting zipzop/pod_dl:$VER"
 echo "=============================================================="
