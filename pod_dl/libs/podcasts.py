@@ -11,7 +11,6 @@ import urllib.request as request
 import urllib.parse
 import lxml.etree
 import eyed3
-import slugify
 import youtube_dl
 
 from . import constants
