@@ -11,6 +11,7 @@ import urllib.request as request
 import urllib.parse
 import lxml.etree
 import eyed3
+import slugify
 import youtube_dl
 
 from . import constants
@@ -18,6 +19,7 @@ from . import files
 from . import post_script
 from . import shell
 from . import timestamps
+from . import strings
 
 
 # Classes
@@ -427,12 +429,13 @@ class Episode(object):
         u_ext = u_clean_url.rpartition('.')[2]
 
         # After we get the clean extension, we can download the file
-        o_local_file = _dl_file(self.u_url, po_dir, pu_name='%s.%s' % (pu_name, u_ext))
+        u_name = strings.sanitize_filename(pu_name)
+        o_local_file = _dl_file(self.u_url, po_dir, pu_name='%s.%s' % (u_name, u_ext))
         return o_local_file
 
     def _download_yt_audio(self, po_dir, pu_name):
         """
-        Method to download the audio from a Youtube video to a local file.
+        Method to download the audio from a YouTube video to a local file.
 
         :param po_dir: Directory where the file should be saved.
         :type po_dir: files.FilePath
