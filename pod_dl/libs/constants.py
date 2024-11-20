@@ -10,7 +10,7 @@ s_PRG = 'Pod DL'
 
 # Program version. Always leave a space between release version and release date because the first part will appear in
 # run.sh for docker. So it looks nicer when that version number and the docker tag coincide.
-s_VER = 'v1.1.dev 2024-08-06'
+s_VER = 'v1.1.dev 2024-11-20'
 
 # Number of retries and delay between them for downloads
 i_DL_RETRIES = 5

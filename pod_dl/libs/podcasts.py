@@ -562,7 +562,7 @@ class Episode(object):
 
         # trying to catch a problem with some feeds missing the pubDate tag
         try:
-            u_date_pub = po_xml.find('pubDate').text
+            u_date_pub = po_xml.find('pubDate').text.strip()
         except AttributeError:
             raise FeedFormatError(pu_short_msg='ERROR: missing publication date in episode entry.',
                                   pu_long_msg=lxml.etree.tostring(po_xml))
