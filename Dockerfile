@@ -15,7 +15,7 @@ COPY scripts/run.sh .
 
 # Installation of packages
 #=======================================================================================================================
-RUN apk add --update --no-cache curl ffmpeg && \
+RUN apk add --update --no-cache curl ffmpeg jq && \
     pip install --no-cache-dir -r /app/pod_dl/python-deps.txt && \
     rm -f /app/pod_dl/python-deps.txt
 
