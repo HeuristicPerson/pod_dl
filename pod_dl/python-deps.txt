@@ -1,4 +1,5 @@
 charset_normalizer
 eyed3
 lxml
+mutagen
 youtube_dl

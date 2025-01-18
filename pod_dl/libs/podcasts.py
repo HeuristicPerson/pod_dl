@@ -11,6 +11,7 @@ import urllib.request as request
 import urllib.parse
 import lxml.etree
 import eyed3
+import mutagen
 import youtube_dl
 
 from . import constants
@@ -316,7 +317,7 @@ class Podcast(object):
         o_post_scr.u_ep_isize = '%s' % po_file.i_size
         # TODO: final file can be an .ogg and eyed3 is not compatible. We can get duration from po_episode if we parsed
         # the non standard itunes duration tag from the feed
-        o_post_scr.u_ep_durat = '00:00:00'
+        o_post_scr.u_ep_durat = _get_audio_file_duration(po_file.u_path)
         o_post_scr.u_ep_path = po_file.u_path
         if constants.u_POST_SCR_MSG:
             o_post_scr.u_msg_tpl = constants.u_POST_SCR_MSG
@@ -409,7 +410,7 @@ class Episode(object):
 
         return o_local_file
 
-    def _download_file(self, po_dir, pu_name):
+    def _download_file(self, po_dir, pu_name: str) -> files.FilePath:
         """
         Method to download a remote file when we have it's full URL. e.g. http://jonh.com/file.mp3
 
@@ -417,10 +418,8 @@ class Episode(object):
         :type po_dir: files.FilePath
 
         :param pu_name: Local name of the file to be saved
-        :type pu_name: Str
 
         :return The local file FilePath object.
-        :rtype files.FilePath
         """
         # Sometimes, the URL doesn't just contain the file name but also some parameters. e.g. ".mp3?d=1646904795" so we
         # need to remove them. I don't know if the dot is a valid character in the URL
@@ -738,7 +737,7 @@ def _number_to_base(pi_number, pi_base):
     return li_digits[::-1]
 
 
-def _dl_file(pu_url, po_dir, pu_name=None):
+def _dl_file(pu_url, po_dir, pu_name=None) -> files.FilePath:
     """
 
     :param pu_url: URL of the file to be downloaded
@@ -751,7 +750,6 @@ def _dl_file(pu_url, po_dir, pu_name=None):
     :type pu_name: str
 
     :return: The path of the downloaded file or None if the DL failed.
-    :rtype str
     """
     if pu_name is None:
         u_file = files.FilePath(files.FilePath(pu_url).u_file)
@@ -830,6 +828,20 @@ def _identify_smallest_episode(po_orig, po_trans):
             o_del = po_trans
 
     return o_keep, o_del
+
+
+def _get_audio_file_duration(ps_file: str) -> str:
+    """
+    Function to get the duration of an audio file in HH:MM:SS format.
+    :param ps_file: Path of the file to be analysed.
+    :return: A string representing the duration of the file.
+    """
+    o_audio = mutagen.File(ps_file)
+    if o_audio is not None:
+        i_duration_seconds = int(o_audio.info.length)  # Get duration in seconds
+        return time.strftime('%H:%M:%S', time.gmtime(i_duration_seconds))
+    else:
+        raise ValueError("Unsupported or invalid audio file format")
 
 
 # Main functions
